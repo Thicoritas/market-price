@@ -73,22 +73,6 @@
     <footer>&copy; 2024 Market Price Inc.</footer>
 
     <script>
-        async function fetchPrice() {
-            const response = await fetch('https://YOUR_FUNCTION_ENDPOINT/price');
-            const data = await response.json();
-            return parseFloat(data.price);
-        }
-
-        async function updatePriceOnServer(price) {
-            await fetch('https://YOUR_FUNCTION_ENDPOINT/price', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ price: price.toFixed(2) })
-            });
-        }
-
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
@@ -99,7 +83,7 @@
             return changeDirection * amount;
         }
 
-        async function updatePrice() {
+        function updatePrice() {
             const minPrice = 10e9;  // 10 billion
             const priceElement = document.getElementById('price');
             let currentPrice = parseFloat(priceElement.textContent.replace(/[$,]/g, ''));
@@ -127,7 +111,6 @@
                 window.lastChange = -1;
             }
 
-            await updatePriceOnServer(newPrice);
             updateChart(newPrice, newPrice > currentPrice ? 'green' : 'red');
         }
 
@@ -172,15 +155,15 @@
             window.myChart.update();
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Fetch initial price from server
-            const initialPrice = await fetchPrice();
-            document.getElementById('price').textContent = `$${formatNumber(initialPrice.toFixed(2))}`;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize with a random value between 10 billion and 10 trillion
+            const initialPrice = (Math.random() * (10e12 - 10e9) + 10e9).toFixed(2);
+            document.getElementById('price').textContent = `$${formatNumber(initialPrice)}`;
             chartData.labels.push('');
             chartData.datasets[0].data.push(parseFloat(initialPrice));
             chartData.datasets[0].borderColor.push('black');
 
-            setInterval(updatePrice, 1500); 
+            setInterval(updatePrice, 1000); 
         });
     </script>
 </body>
